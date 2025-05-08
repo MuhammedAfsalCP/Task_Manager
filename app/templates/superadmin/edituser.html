@@ -1,0 +1,41 @@
+{% extends 'superadmin/superadminbase.html' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Edit User</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" id="name" name="name" value="{{ user.name }}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="mobile_number" class="form-label">Mobile Number:</label>
+            <input type="text" id="mobile_number" name="mobile_number" value="{{ user.mobile_number }}" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="admin_id" class="form-label">Assign Admin:</label>
+            <select name="admin_id" id="admin_id" class="form-select" required>
+                <option value="">Select an Admin</option>
+                {% for admin in admins %}
+                    <option value="{{ admin.id }}" {% if current_admin == admin.id %}selected{% endif %}>
+                        {{ admin.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update User</button>
+    </form>
+</div>
+{% endblock %}

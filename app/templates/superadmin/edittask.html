@@ -1,0 +1,39 @@
+{% extends 'superadmin/superadminbase.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Edit Task Assignment</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <p><strong>Task:</strong> {{ task.title }}</p>
+        <p><strong>Current Assigned User:</strong> {{ task.assigned_to.email }}</p>
+
+        <div class="mb-3">
+            <label for="assigned_to" class="form-label">Reassign To:</label>
+            <select name="assigned_to" id="assigned_to" class="form-select" required>
+                <option value="">Select a User</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% if user.id == task.assigned_to.id %}selected{% endif %}>
+                        {{ user.email }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Task</button>
+    </form>
+
+    {% if messages %}
+        <div class="mt-4">
+            {% for message in messages %}
+                <div class="alert alert-info" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <a href="{% url 'view_task' task.id %}" class="btn btn-secondary mt-3">Back to Task Details</a>
+</div>
+{% endblock %}

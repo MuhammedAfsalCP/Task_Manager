@@ -1,0 +1,42 @@
+{% extends 'superadmin/superadminbase.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Assign Users to Admin</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="admin_id" class="form-label">Select Admin:</label>
+            <select id="admin_id" name="admin_id" class="form-select" required>
+                <option value="">Select Admin</option>
+                {% for admin in admins %}
+                    <option value="{{ admin.id }}">{{ admin.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="user_ids" class="form-label">Select Users:</label>
+            <select id="user_ids" name="user_ids" class="form-select" required>
+                <option value="">Select User</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Assign Users</button>
+    </form>
+
+    {% if messages %}
+        <div class="mt-4">
+            {% for message in messages %}
+                <div class="alert alert-info" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

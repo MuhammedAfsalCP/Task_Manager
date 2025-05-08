@@ -1,0 +1,56 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Assign Task{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Assign Task</h2>
+    
+    <!-- Display Django messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="user" class="form-label">Select User:</label>
+            <select name="user_id" id="user" class="form-control" required>
+                <option value="">-- Select User --</option>
+                {% for user in users %}
+                    <option value="{{ user.id }}">{{ user.name }} ({{ user.email }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="title" class="form-label">Task Title:</label>
+            <input type="text" id="title" name="title" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Task Description:</label>
+            <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="due_date" class="form-label">Due Date:</label>
+            <input type="date" name="due_date" id="due_date" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Assign Task</button>
+    </form>
+</div>
+
+<!-- JavaScript to restrict date picker to today or future -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dueDateInput = document.getElementById("due_date");
+        const today = new Date().toISOString().split("T")[0];
+        dueDateInput.min = today;
+    });
+</script>
+{% endblock %}

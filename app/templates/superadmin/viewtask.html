@@ -1,0 +1,48 @@
+{% extends 'superadmin/superadminbase.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Task Details</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <th scope="row">Title</th>
+                <td>{{ task.title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Description</th>
+                <td>{{ task.description }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Assigned To</th>
+                <td>{{ task.assigned_to.email }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Due Date</th>
+                <td>{{ task.due_date }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Status</th>
+                <td>{{ task.status }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Completion Report</th>
+                <td>{{ task.completion_report|default:"Not submitted" }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Worked Hours</th>
+                <td>{{ task.worked_hours|default:"Not updated" }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Created At</th>
+                <td>{{ task.created_at }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Updated At</th>
+                <td>{{ task.updated_at }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <h2>Manage Users</h2>
+    <div class="user-actions">
+        <button><a href="{% url 'admin_create_user' %}">Create New User</a></button>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>johndoe@example.com</td>
+                    <td>Admin</td>
+                    <td>
+                        <button><a href="{% url 'admin_edit_user' user.id %}">Edit</a></button>
+                        <button><a href="{% url 'admin_delete_user' user.id %}">Delete</a></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

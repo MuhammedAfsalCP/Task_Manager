@@ -1,0 +1,25 @@
+{% extends 'superadmin/superadminbase.html' %}
+
+{% block title %}Edit Admin{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Edit Admin</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="name" class="form-label">Name:</label>
+            <input type="text" id="name" name="name" value="{{ admin.name }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" name="email" value="{{ admin.email }}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="mobile_number" class="form-label">Mobile Number:</label>
+            <input type="text" id="mobile_number" name="mobile_number" value="{{ admin.mobile_number }}" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Admin</button>
+    </form>
+</div>
+{% endblock %}
