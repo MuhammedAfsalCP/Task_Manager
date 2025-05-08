@@ -1,13 +1,6 @@
-from django.contrib import admin
 from django.urls import path
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-)
 from django.contrib.auth import views as auth_views
 from .views import (
-    UserGettingTasks,
-    Taskeditting,
-    AdminGettingTasks,
     dashboard,
     admindashboard,
     manage_tasks,
@@ -17,6 +10,7 @@ from .views import (
     CustomLogoutView,
     admin_edit_task,
     admin_assign_task_to_user,
+    admin_delete_task,
 )
 from .superadminviews import (
     superadmin_manage_users,
@@ -76,6 +70,11 @@ urlpatterns = [
         "adminedittask/<int:task_id>/",
         admin_edit_task,
         name="admin_edit_task",
+    ),
+    path(
+        "admindeletetask/<int:task_id>/",
+        admin_delete_task,
+        name="admin_delete_task",
     ),
     path(
         "superadmindeletetask/<int:task_id>/",
