@@ -25,12 +25,18 @@ def superadmin_dashboard(request):
 
 @login_required
 def superadmin_manage_users(request):
-    if not request.user.role == "superadmin":
+    if request.user.role != "superadmin":
         return redirect("dashboard")
     user_admin_mappings = Adminusers.objects.select_related("user", "admin").all()
-    return render(
-        request, "superadmin/manage_users.html", {"users": user_admin_mappings}
-    )
+    assigned_users = user_admin_mappings.values_list("user", flat=True)
+    user_admin = UserProfile.objects.filter(role="user").exclude(id__in=assigned_users)
+    assigned_users_list = list(user_admin_mappings)
+    unassigned_users_list = list(user_admin)
+    combined_users = {
+        user.id: user for user in assigned_users_list + unassigned_users_list
+    }.values()
+    print(combined_users)
+    return render(request, "superadmin/manage_users.html", {"users": combined_users})
 
 
 @login_required
@@ -137,36 +143,45 @@ def create_user(request):
 def edit_admin(request, admin_id):
     if request.user.role != "superadmin":
         return redirect("dashboard")
-    admin = UserProfile.objects.get(Q(id=admin_id) & Q(role="admin"))
+    admin = UserProfile.objects.get(id=admin_id)
     if request.method == "POST":
         admin.name = request.POST.get("name")
         admin.email = request.POST.get("email")
         admin.mobile_number = request.POST.get("mobile_number")
+        new_role = request.POST.get("role")
+        if new_role in ["admin","user"]:
+            admin.role = new_role
         admin.save()
         return redirect("superadmin_manage_admins")
     return render(request, "superadmin/editadmin.html", {"admin": admin})
-
-
 @login_required
 def edit_user(request, user_id):
     if request.user.role != "superadmin":
         return redirect("dashboard")
     user = UserProfile.objects.get(Q(id=user_id) & Q(role="user"))
-    current_assignment = Adminusers.objects.filter(user=user).first()
+    try:
+        current_assignment = Adminusers.objects.get(user=user)
+    except Adminusers.DoesNotExist:
+        current_assignment = None
     admins = UserProfile.objects.filter(role="admin")
+
     if request.method == "POST":
+        new_role = request.POST.get("role")
+        if new_role and user.role != new_role and new_role != "user":
+            if current_assignment:
+                current_assignment.delete()
+            
         user.name = request.POST.get("name")
         user.email = request.POST.get("email")
         user.mobile_number = request.POST.get("mobile_number")
+        if new_role:
+            user.role = new_role
         user.save()
-        new_admin_id = request.POST.get("admin_id")
-        if new_admin_id:
-            new_admin = UserProfile.objects.get(id=new_admin_id, role="admin")
-
-            if current_assignment:
-                current_assignment.admin = new_admin
-                current_assignment.save()
-            else:
+        if user.role == "user":
+            new_admin_id = request.POST.get("admin_id")
+            if new_admin_id:
+                new_admin = UserProfile.objects.get(id=new_admin_id, role="admin")
+                Adminusers.objects.filter(user=user).delete()
                 Adminusers.objects.create(user=user, admin=new_admin)
         return redirect("superadmin_manage_users")
     return render(
@@ -175,13 +190,9 @@ def edit_user(request, user_id):
         {
             "user": user,
             "admins": admins,
-            "current_admin": (
-                current_assignment.admin.id if current_assignment else None
-            ),
+            "current_admin": current_assignment.admin.id if current_assignment else None,
         },
     )
-
-
 @login_required
 def delete_user(request, user_id):
     if request.user.role != "superadmin":

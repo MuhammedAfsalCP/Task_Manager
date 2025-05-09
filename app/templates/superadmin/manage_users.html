@@ -19,15 +19,39 @@
             </thead>
             <tbody>
                 {% for user in users %}
-                    <tr>
-                        <td>{{ user.user.name }}</td>
-                        <td>{{ user.user.email }}</td>
-                        <td>{{ user.admin.name }}</td>
-                        <td>
-                            <a href="{% url 'edit_user' user.user.id %}" class="btn btn-sm btn-primary me-2">Edit</a>
-                            <a href="{% url 'delete_user' user.user.id %}" class="btn btn-sm btn-danger">Delete</a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        {% if user.user.name %}
+                        {{ user.user.name }}
+                        {% else %}
+                        {{user.name}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.user.email %}
+                        {{ user.user.email }}
+                        {% else %}
+                        {{user.email}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.admin.name %}
+                        {{ user.admin.name }}
+                        {% else %}
+                        No Admin
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.user.id %}
+                        <a href="{% url 'edit_user' user.user.id %}" class="btn btn-sm btn-primary me-2">Edit</a>
+                        <a href="{% url 'delete_user' user.user.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        {% else %}
+                        <a href="{% url 'edit_user' user.id %}" class="btn btn-sm btn-primary me-2">Edit</a>
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+
                 {% endfor %}
             </tbody>
         </table>

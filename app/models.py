@@ -8,27 +8,24 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, mobile_number=mobile_number, **extra_fields)
         user.set_password(password)
-
         user.save(using=self._db)
         return user
-    
+
     def create_admin(self, email, mobile_number, password=None, **extra_fields):
-        if not email:
-            raise ValueError("Users must have an email address")
-        extra_fields.update({
-            "role": "admin",
-        })
-        user = self.create_user(email, mobile_number, password, **extra_fields)
-        user.save(using=self._db)
-        return user
+        extra_fields.setdefault("role", "admin")
+        return self.create_user(email, mobile_number, password, **extra_fields)
 
-    def create_superadmin(self, email, mobile_number, password=None, **extra_fields):
-        extra_fields.update({
-            "role": "superadmin",
-        })
-        user = self.create_user(email, mobile_number, password, **extra_fields)
-        user.save(using=self._db)
-        return user
+    def create_superuser(self, email, mobile_number, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("role", "superadmin")
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(email, mobile_number, password, **extra_fields)
 
 class UserProfile(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = (
@@ -36,38 +33,49 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
         ('admin', 'Admin'),
         ('user', 'User'),
     )
+
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=100, blank=True, null=True) 
+    name = models.CharField(max_length=100, blank=True, null=True)
     mobile_number = models.CharField(max_length=10, unique=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
+
     is_active = models.BooleanField(default=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES,default='user')
+    is_staff = models.BooleanField(default=False)
+
     objects = UserManager()
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["mobile_number"]
+
+    def __str__(self):
+        return self.email
+
     @property
     def is_admin(self):
         return self.role == 'admin'
 
     @property
-    def is_user(self):
-        return self.role == 'user'
+    def is_superadmin(self):
+        return self.role == 'superadmin'
+
     @property
     def is_user(self):
-        return self.role == 'superadmin'
-    def __str__(self):
-        return self.email
+        return self.role == 'user'
 
 class Adminusers(models.Model):
-    admin=models.ForeignKey(UserProfile,
+    admin = models.ForeignKey(
+        UserProfile,
         on_delete=models.CASCADE,
         related_name='admin',
-        limit_choices_to={'role': 'admin'})
-    user=models.ForeignKey(UserProfile,
+        limit_choices_to={'role': 'admin'}
+    )
+    user = models.OneToOneField(
+        UserProfile,
         on_delete=models.CASCADE,
         related_name='Users',
-        limit_choices_to={'role': 'user'},unique=True)
-        
+        limit_choices_to={'role': 'user'}
+    )
+
 class Task(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

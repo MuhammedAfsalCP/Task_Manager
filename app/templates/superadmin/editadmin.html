@@ -19,6 +19,13 @@
             <label for="mobile_number" class="form-label">Mobile Number:</label>
             <input type="text" id="mobile_number" name="mobile_number" value="{{ admin.mobile_number }}" class="form-control" required>
         </div>
+        <div class="mb-3">
+            <label for="role" class="form-label">Role:</label>
+            <select id="role" name="role" class="form-select" required>
+                <option value="admin" {% if admin.role == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="user" {% if admin.role == 'user' %}selected{% endif %}>User</option>
+            </select>
+        </div>
         <button type="submit" class="btn btn-primary">Update Admin</button>
     </form>
 </div>
