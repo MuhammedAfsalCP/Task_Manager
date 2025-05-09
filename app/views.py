@@ -41,7 +41,7 @@ class Register_Super_admin(APIView):
             return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = UserProfile.objects.create_superadmin(
+            user = UserProfile.objects.create_superuser(
                 email=email,
                 password=password,
                 mobile_number=mobile_number,
